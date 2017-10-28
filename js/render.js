@@ -1,7 +1,7 @@
 ﻿/*
-* 2017.7.24
-* author:acdSeen;version:1.1
-* */
+ * 2017.7.24
+ * author:acdSeen
+ * */
 (function(window,factory){
 
     if(typeof define === "function" && define.amd){
@@ -12,18 +12,21 @@
         module.exports = factory();
     }else{
         //window
-        window.waterPolo = factory();
+        window.WaterPolo = factory();
     }
 
-}(typeof window !== "undefined" ? window : this, function(selector,userOptions){//采用window作为传入参数，可以将window作为局部变量，这样jquery访问window对象时，不需要将作用域链退回到顶部作用域
-    var waterPolo=function(selector,userOptions){
+}(typeof window !== "undefined" ? window : this, function(selector,userOptions){
+//采用window作为传入参数，可以将window作为局部变量，这样jquery访问window对象时，不需要将作用域链退回到顶部作用域
 
-        'user strict';//使用严格模式
+    var WaterPolo=function(selector,userOptions){
+
+        'user strict';
+        
+        userOptions=userOptions||{};
 
         var options={
             //容器距边缘的距离
             wrapW:3,
-
 
             //canvas属性
             cW:300,
@@ -31,7 +34,10 @@
             lineWidth : 2,
 
             //液面位置 百分比表示
-            baseY:20,
+            baseY: 20,
+
+            //页面起始位置
+            nowRange: 0,
 
             //线条颜色
             lineColor:'rgb(176,204,53)',
@@ -60,15 +66,26 @@
             twoOffsetX:20,
 
             //波浪滚动速度，数越大越快
-            speed:0.02
+            speed:0.2
         };
 
-        //全局变量
-        var canvas=null,
-            ctx=null,
-            W=null,
-            H=null,
-            nowRange=0;
+        
+        var canvas = null,
+            ctx = null,
+            W = null,
+            H = null;
+
+
+        Object.defineProperty(this, 'options', {  
+                get: function() {  
+                    return options;  
+                },  
+                set: function(value) { 
+                    
+                    mergeOption(value,options);
+                }  
+            }); 
+         
 
         //参数混合相当于$.extend([old],[new])
         var mergeOption=function(userOptions,options){
@@ -88,7 +105,7 @@
                 var y = -Math.sin(x * waveWidth + xOffset);
 
                 //液面高度百分比改变
-                var dY = options.cH * (1 - nowRange / 100 );
+                var dY = options.cH * (1 - options.nowRange / 100);
 
                 points.push([x, dY + y * waveHeight]);
                 ctx.lineTo(x, dY + y * waveHeight);
@@ -102,12 +119,11 @@
             ctx.restore();
         };
 
-
-
         //初始化设置
-        var init=function(selector,userOptions){
-            mergeOption(userOptions,options);
 
+        var init=function(){
+            
+            mergeOption(userOptions,options);
 
             canvas=document.getElementById(selector);
             ctx=canvas.getContext('2d');
@@ -120,7 +136,7 @@
             //圆属性
             var r = options.cH / 2; //圆心
             var cR = r - 6; //圆半径 决定圆的大小
-            var IsdrawCircled = false;//判断页面高度是否到达
+            
             var drawCircle = function(ctx){
                 ctx.beginPath();
                 ctx.strokeStyle = options.lineColor;
@@ -131,37 +147,39 @@
                 ctx.clip();
 
             };
+            drawCircle(ctx);//画圆
 
             (function drawFrame(){
+
                 window.requestAnimationFrame(drawFrame);
+
                 ctx.clearRect(0, 0, options.cW, options.cH);
-                if(IsdrawCircled == false){
-                    drawCircle(ctx);
-                }
+                
                 //高度改变动画参数
 
-                if(nowRange <= options.baseY){
+                if (options.nowRange <= options.baseY) {
                     var tmp = 1;
-                    nowRange += tmp;
+                    options.nowRange += tmp;
                 }
 
-                if(nowRange > options.baseY){
+                if (options.nowRange > options.baseY) {
                     var tmp = 1;
-                    nowRange -= tmp;
+                    options.nowRange -= tmp;
                 }
                 makeLiquaid(ctx,options.oneOffsetX,options.oneWaveWidth,options.oneWaveHeight,options.oneColor);
                 makeLiquaid(ctx,options.twoOffsetX,options.twoWaveWidth,options.twoWaveHeight,options.twoColor);
 
                 options.oneOffsetX+=options.speed;
                 options.twoOffsetX+=options.speed;
+
             }());
 
-
+            
         };
-
-        init(selector,userOptions)
+        init();
+        
     };
-    return waterPolo;
+    return WaterPolo;
 }));
 
 
