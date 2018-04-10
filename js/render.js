@@ -16,7 +16,7 @@
     }
 
 }(typeof window !== "undefined" ? window : this, function(selector,userOptions){
-//采用window作为传入参数，可以将window作为局部变量，这样jquery访问window对象时，不需要将作用域链退回到顶部作用域
+//采用window作为参数传入，将功能函数挂载到window上
 
     var WaterPolo=function(selector,userOptions){
 
@@ -181,6 +181,3 @@
     };
     return WaterPolo;
 }));
-
-
-   
