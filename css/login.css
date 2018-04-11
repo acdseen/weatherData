@@ -104,11 +104,10 @@ body{
     height: 100px;
     background: url("../img/login2.png") no-repeat center;
     margin: 0 auto;
-    margin-top: 40%;
+    position: relative;
     color:red;
     line-height: 100px;
     text-align: center;
-    position: relative;
     font-weight: bold;
 }
 .warning span{
