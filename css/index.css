@@ -357,7 +357,7 @@ body{
 }
 .point span{
     display: inline-block;
-    float: right;
+    
     margin-right: 80px;
 }
 .wind{
